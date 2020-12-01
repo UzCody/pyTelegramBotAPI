@@ -55,6 +55,7 @@ class TeleBot:
         getMe
         sendMessage
         forwardMessage
+	copyMessage
         deleteMessage
         sendPhoto
         sendAudio

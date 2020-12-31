@@ -55,6 +55,7 @@ class TeleBot:
         getMe
         sendMessage
         forwardMessage
+        copyMessage
         deleteMessage
         sendPhoto
         sendAudio
@@ -717,7 +718,20 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout))
+            apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout)
+            )
+
+    def copy_message(self, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None, disable_notification=None, reply_to_message_id=None, allow_sending_without_reply=None, reply_markup=None, timeout=None):
+        """
+        Use this method to copy messages of any kind.
+        :param disable_notification:
+        :param chat_id: which chat to forward
+        :param from_chat_id: which chat message from
+        :param message_id: message id
+        :param timeout:
+        :return: API reply.
+        """
+        return apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities, disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup, timeout)
 
     def delete_message(self, chat_id, message_id, timeout=None):
         """
@@ -1239,28 +1253,16 @@ class TeleBot:
         """
         return apihelper.pin_chat_message(self.token, chat_id, message_id, disable_notification)
 
-    def unpin_chat_message(self, chat_id, message_id=None):
+    def unpin_chat_message(self, chat_id):
         """
-        Use this method to unpin specific pinned message in a supergroup chat.
-        The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-        Returns True on success.
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
-            (in the format @channelusername)
-        :param message_id: Int: Identifier of a message to unpin
-        :return:
-        """
-        return apihelper.unpin_chat_message(self.token, chat_id, message_id)
-
-    def unpin_all_chat_messages(self, chat_id):
-        """
-        Use this method to unpin a all pinned messages in a supergroup chat.
+        Use this method to unpin a message in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :return:
         """
-        return apihelper.unpin_all_chat_messages(self.token, chat_id)
+        return apihelper.unpin_chat_message(self.token, chat_id)
 
     def edit_message_text(self, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                           disable_web_page_preview=None, reply_markup=None):
@@ -1364,7 +1366,7 @@ class TeleBot:
             ret.append(types.GameHighScore.de_json(r))
         return ret
 
-    def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
+    def send_invoice(self, chat_id, title, description, payload, provider_token, currency, prices,
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
                      send_phone_number_to_provider=None, send_email_to_provider=None, is_flexible=None,
@@ -1398,7 +1400,7 @@ class TeleBot:
         :return:
         """
         result = apihelper.send_invoice(
-            self.token, chat_id, title, description, invoice_payload, provider_token,
+            self.token, chat_id, title, description, payload, provider_token,
             currency, prices, start_parameter, photo_url, photo_size, photo_width,
             photo_height, need_name, need_phone_number, need_email, need_shipping_address,
             send_phone_number_to_provider, send_email_to_provider, is_flexible, disable_notification,
@@ -2224,6 +2226,10 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def forward_message(self, *args, **kwargs):
         return TeleBot.forward_message(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def copy_message(self, *args, **kwargs):
+        return TeleBot.copy_message(self, *args, **kwargs)
 
     @util.async_dec()
     def delete_message(self, *args):
@@ -2328,10 +2334,6 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def unpin_chat_message(self, *args):
         return TeleBot.unpin_chat_message(self, *args)
-
-    @util.async_dec()
-    def unpin_all_chat_messages(self, *args):
-        return TeleBot.unpin_all_chat_messages(self, *args)
 
     @util.async_dec()
     def edit_message_text(self, *args, **kwargs):

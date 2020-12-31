@@ -312,6 +312,32 @@ def forward_message(
     return _make_request(token, method_url, params=payload)
 
 
+def copy_message(
+        token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None, 
+        disable_notification=None, reply_to_message_id=None, allow_sending_without_reply=None, reply_markup=None, timeout=None):
+    method_url = r'copyMessage'
+    payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
+    if caption:
+        payload['caption'] = caption
+    if caption_entities:
+        payload['caption_entities'] = caption_entities
+    if caption_entities:
+        payload['caption_entities'] = caption_entities
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    if timeout:
+        payload['connect-timeout'] = timeout
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def send_dice(
         token, chat_id,
         emoji=None, disable_notification=None, reply_to_message_id=None,
@@ -830,16 +856,8 @@ def pin_chat_message(token, chat_id, message_id, disable_notification=None):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def unpin_chat_message(token, chat_id, message_id):
+def unpin_chat_message(token, chat_id):
     method_url = 'unpinChatMessage'
-    payload = {'chat_id': chat_id}
-    if message_id:
-        payload['message_id'] = message_id
-    return _make_request(token, method_url, params=payload, method='post')
-
-
-def unpin_all_chat_messages(token, chat_id):
-    method_url = 'unpinAllChatMessages'
     payload = {'chat_id': chat_id}
     return _make_request(token, method_url, params=payload, method='post')
 
@@ -993,7 +1011,7 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
 # Payments (https://core.telegram.org/bots/api#payments)
 
 def send_invoice(
-        token, chat_id, title, description, invoice_payload, provider_token, currency, prices,
+        token, chat_id, title, description, payload, provider_token, currency, prices,
         start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
         need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
@@ -1029,7 +1047,7 @@ def send_invoice(
     :return:
     """
     method_url = r'sendInvoice'
-    payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,
+    payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': payload,
                'provider_token': provider_token, 'start_parameter': start_parameter, 'currency': currency,
                'prices': _convert_list_json_serializable(prices)}
     if photo_url:

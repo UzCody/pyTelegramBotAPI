@@ -280,6 +280,8 @@ class Message(JsonDeserializable):
             opts['forward_date'] = obj.get('forward_date')
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
+        if 'allow_sending_without_reply' in obj:
+            opts['allow_sending_without_reply'] = Message.de_json(obj['allow_sending_without_reply'])
         if 'edit_date' in obj:
             opts['edit_date'] = obj.get('edit_date')
         if 'media_group_id' in obj:
